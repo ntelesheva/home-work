@@ -3,6 +3,8 @@ package list;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -138,5 +140,87 @@ public class ArrayListTest {
         list.add(new Integer(555));
         Object[] objects = list.toArray();
         assertThat(objects.length).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldReturnIndexfElementInList(){
+        list.add(new Integer(100));
+        list.add(new Integer(560));
+        list.add(new Integer(100));
+        assertThat(list.indexOf(new Integer(100))).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldReturnNegativeNumberOneAfterCallMethodIndexOf(){
+        list.add(new Integer(100));
+        list.add(new Integer(560));
+        assertThat(list.indexOf(new Integer(55))).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldReturnLAstIndexInMethodLastIndex() {
+        list.add(new Integer(100));
+        list.add(new Integer(560));
+        list.add(new Integer(100));
+        assertThat(list.lastIndexOf(new Integer(100))).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldReturnNegativeNumberOneAfterCallMethodLastIndexOf(){
+        list.add(new Integer(100));
+        list.add(new Integer(560));
+        assertThat(list.lastIndexOf(new Integer(55))).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldAddElementByIndex(){
+        list.add(new Integer(10));
+        list.add(new Integer(56));
+        list.add(new Integer(80));
+        list.add(new Integer(90));
+        list.add(new Integer(60));
+        int size = list.size();
+        list.add(3, 200);
+        assertThat(list.indexOf(200)).isEqualTo(3);
+        assertThat(list.size()).isEqualTo(size+1);
+    }
+
+    @Test
+    public void shouldReturnTrueAfterMethodContainsAll(){
+        list.add(new Integer(10));
+        list.add(new Integer(56));
+        list.add(new Integer(80));
+        list.add(new Integer(90));
+        list.add(new Integer(60));
+        Collection<Integer> collections = new ArrayList<>();
+        collections.add(new Integer(56));
+        collections.add(new Integer(60));
+        assertThat(list.containsAll(collections)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnFalseAfterMethodContainsAll(){
+        list.add(new Integer(10));
+        list.add(new Integer(56));
+        list.add(new Integer(80));
+        list.add(new Integer(90));
+        list.add(new Integer(60));
+        Collection<Integer> collections = new ArrayList<>();
+        collections.add(null);
+        collections.add(new Integer(6));
+        assertThat(list.containsAll(collections)).isFalse();
+    }
+
+    @Test
+    public void shouldReturnTrueAfterMethodAddAll(){
+        list.add(new Integer(10));
+        list.add(new Integer(56));
+        list.add(new Integer(80));
+        list.add(new Integer(90));
+        list.add(new Integer(60));
+        List<Integer> list2 = new ArrayList<>();
+        list2.add(new Integer(25));
+        list2.add(new Integer(35));
+        assertThat(list.addAll(list2)).isTrue();
     }
 }

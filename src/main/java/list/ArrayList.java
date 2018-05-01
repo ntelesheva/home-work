@@ -57,8 +57,8 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public Object[] toArray() {
-        Object [] newArray = new Object[size];
-        System.arraycopy(elements,0,newArray,0,size);
+        Object[] newArray = new Object[size];
+        System.arraycopy(elements, 0, newArray, 0, size);
         return newArray;
     }
 
@@ -80,10 +80,10 @@ public class ArrayList<T> implements List<T> {
     }
 
     @Override
-    public boolean remove(Object obj) { //TODO: if null!!!
+    public boolean remove(Object obj) { //TODO: if null!!!??????????-> this.elements= newArray;
         int index = -1;
         for (int i = 0; i < size; i++) {
-            if (((T)elements[i]).equals(obj)) {
+            if (((T) elements[i]).equals(obj)) {
                 index = i;
             }
         }
@@ -96,23 +96,45 @@ public class ArrayList<T> implements List<T> {
             size--;
         } else if (index == 0) {
             System.arraycopy(elements, 1, newArray, 0, --size);
-        } else
-        {
-            System.arraycopy(elements,0,newArray,0,index);
-            System.arraycopy(elements,index+1,newArray,index,size-1-index);
+        } else {
+            System.arraycopy(elements, 0, newArray, 0, index);
+            System.arraycopy(elements, index + 1, newArray, index, size - 1 - index);
             size--;
         }
-            return true;
+        return true;
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {//todo
-        return false;
+    public boolean containsAll(Collection<?> collObj) {
+        int sizeOfCollection = collObj.size();
+        int count = 0;
+        for (int i = 0; i < size; i++) {
+            Object objectOfElem = elements[i];
+            for (Object objectOfColl : collObj) {
+                if(objectOfElem == null & objectOfColl == null){
+                    count ++;
+                }
+                else if (elements[i].equals(objectOfColl)) {
+                    count++;
+                }
+            }
+        }
+        return sizeOfCollection == count;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return false;
+        int sizeCollection = c.size();
+        if(sizeCollection <= 0){
+            return false;
+        }
+        Object [] newArray = new Object[size+sizeCollection+1];
+        System.arraycopy(elements,0,newArray,0,size);
+        Object [] arrayOfCollection = c.toArray();
+        System.arraycopy(arrayOfCollection, 0,newArray,size+1, sizeCollection);
+        this.elements = newArray;
+        size = newArray.length;
+        return true;
     }
 
     @Override
@@ -149,8 +171,26 @@ public class ArrayList<T> implements List<T> {
     }
 
     @Override
-    public void add(int index, T element) {
+    public void add(int index, T object) {
+        if (index >= size) {
+            throw new IndexOutOfBoundsException("index number more then size of ArrayList");
+        }
 
+        Object[] newArray = new Object[capacity + 1];
+        if (index == size - 1) {
+            add(object);
+        } else if (index == 0) {
+            newArray[0] = object;
+            System.arraycopy(elements, 0, newArray, 1, ++size);
+            this.elements = newArray;
+
+        } else {
+            System.arraycopy(elements, 0, newArray, 0, index);
+            newArray[index] = object;
+            System.arraycopy(elements, index, newArray, index + 2, size - index);
+            size++;
+            this.elements = newArray;
+        }
     }
 
     @Override
@@ -173,13 +213,39 @@ public class ArrayList<T> implements List<T> {
     }
 
     @Override
-    public int indexOf(Object o) {
-        return 0;
+    public int indexOf(Object object) {
+        int index = -1;
+        if (object == null) {
+            for (int i = 0; i < size; i++) {
+                if (elements[i] == null) {
+                    return i;
+                }
+            }
+        }
+        for (int i = 0; i < size; i++) {
+            if (elements[i].equals(object)) {
+                return i;
+            }
+        }
+        return index;
     }
 
     @Override
-    public int lastIndexOf(Object o) {
-        return 0;
+    public int lastIndexOf(Object object) {
+        int index = -1;
+        if (object == null) {
+            for (int i = size - 1; i > 0; i--) {
+                if (elements[i] == null) {
+                    return i;
+                }
+            }
+        }
+        for (int i = size - 1; i > 0; i--) {
+            if (elements[i].equals(object)) {
+                return i;
+            }
+        }
+        return index;
     }
 
     @Override
@@ -197,7 +263,7 @@ public class ArrayList<T> implements List<T> {
         return null;
     }
 
-    private class IteratorImpl<E> implements Iterator<E>{
+    private class IteratorImpl<E> implements Iterator<E> {
         private int counter = 0;
 
         @Override
@@ -207,7 +273,7 @@ public class ArrayList<T> implements List<T> {
 
         @Override
         public E next() {
-            return (E)elements[counter++];
+            return (E) elements[counter++];
         }
     }
 }
