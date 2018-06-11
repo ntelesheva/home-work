@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 public class ArrayList<T> implements List<T> {
 
@@ -64,7 +65,7 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public <T1> T1[] toArray(T1[] a) {
-        return null;
+        throw new UnsupportedOperationException("this method is not implemented yet");
     }
 
     @Override
@@ -90,17 +91,21 @@ public class ArrayList<T> implements List<T> {
         if (index == -1) {
             return false;
         }
-        Object[] newArray = new Object[capacity];
+
         if (index == size - 1) {
             elements[index] = null;
             size--;
-        } else if (index == 0) {
+            return true;
+        }
+        Object[] newArray = new Object[capacity];
+        if (index == 0) {
             System.arraycopy(elements, 1, newArray, 0, --size);
         } else {
             System.arraycopy(elements, 0, newArray, 0, index);
             System.arraycopy(elements, index + 1, newArray, index, size - 1 - index);
             size--;
         }
+        this.elements = newArray;
         return true;
     }
 
@@ -111,10 +116,9 @@ public class ArrayList<T> implements List<T> {
         for (int i = 0; i < size; i++) {
             Object objectOfElem = elements[i];
             for (Object objectOfColl : collObj) {
-                if(objectOfElem == null & objectOfColl == null){
-                    count ++;
-                }
-                else if (elements[i].equals(objectOfColl)) {
+                if (objectOfElem == null & objectOfColl == null) {
+                    count++;
+                } else if (elements[i].equals(objectOfColl)) {
                     count++;
                 }
             }
@@ -125,13 +129,13 @@ public class ArrayList<T> implements List<T> {
     @Override
     public boolean addAll(Collection<? extends T> c) {
         int sizeCollection = c.size();
-        if(sizeCollection <= 0){
+        if (sizeCollection <= 0) {
             return false;
         }
-        Object [] newArray = new Object[size+sizeCollection+1];
-        System.arraycopy(elements,0,newArray,0,size);
-        Object [] arrayOfCollection = c.toArray();
-        System.arraycopy(arrayOfCollection, 0,newArray,size+1, sizeCollection);
+        Object[] newArray = new Object[size + sizeCollection + 1];
+        System.arraycopy(elements, 0, newArray, 0, size);
+        Object[] arrayOfCollection = c.toArray();
+        System.arraycopy(arrayOfCollection, 0, newArray, size + 1, sizeCollection);
         this.elements = newArray;
         size = newArray.length;
         return true;
@@ -139,22 +143,46 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
-        return false;
+        if (index > size) {
+            throw new IndexOutOfBoundsException("index number more then size of ArrayList");
+        }
+        Object[] arrayFromCollection = c.toArray();
+        int sizeCollection = arrayFromCollection.length;
+        Object[] newArray = new Object[capacity + sizeCollection];
+
+        if (index == size - 1) {
+            System.arraycopy(elements, 0, newArray, 0, size);
+            System.arraycopy(arrayFromCollection, 0, newArray, size, sizeCollection);
+
+        } else if (index == 0) {
+            System.arraycopy(arrayFromCollection, 0, newArray, 0, sizeCollection);
+            System.arraycopy(elements, 0, newArray, sizeCollection, size);
+
+        } else {
+            System.arraycopy(elements, 0, newArray, 0, index);// 1 5 6 2 3
+            System.arraycopy(arrayFromCollection, 0, newArray, index, sizeCollection);
+            System.arraycopy(elements, index, newArray, index + sizeCollection, size - index);
+        }
+        this.elements = newArray;
+        this.size = size + sizeCollection;
+
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        throw new UnsupportedOperationException("this method is not implemented yet");
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        throw new UnsupportedOperationException("this method is not implemented yet");
     }
 
     @Override
     public void clear() {
-
+        this.elements = new Object[START_CAPACITY];
+        this.size = 0;
     }
 
     @Override
@@ -167,7 +195,7 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public T set(int index, T element) {
-        return null;
+        throw new UnsupportedOperationException("this method is not implemented yet");
     }
 
     @Override
@@ -250,21 +278,24 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public ListIterator<T> listIterator() {
-        return null;
+        return new ListIteratorImpl<>();
     }
 
     @Override
     public ListIterator<T> listIterator(int index) {
-        return null;
+        if(index < 0 || index > size()) {
+            throw new IndexOutOfBoundsException();
+        }
+        return  new ListIteratorImpl<>(index);
     }
 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return null;
+        throw new UnsupportedOperationException("this method is not implemented yet");
     }
 
     private class IteratorImpl<E> implements Iterator<E> {
-        private int counter = 0;
+        protected int counter = 0;
 
         @Override
         public boolean hasNext() {
@@ -273,7 +304,59 @@ public class ArrayList<T> implements List<T> {
 
         @Override
         public E next() {
+            if (counter == size) {
+                throw new NoSuchElementException();
+            }
             return (E) elements[counter++];
+        }
+    }
+
+    private class ListIteratorImpl<E> extends IteratorImpl<E> implements ListIterator<E> {
+
+        public ListIteratorImpl() {
+        }
+
+        public ListIteratorImpl(int counter) {
+            this.counter = counter;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return counter > 0;
+        }
+
+        @Override
+        public E previous() {
+            if (counter == 0) {
+                throw new NoSuchElementException();
+            }
+            return (E) elements[counter--];
+        }
+
+        @Override
+        public int nextIndex() {
+            return counter == size - 1 ? size : counter + 1;
+        }
+
+        @Override
+        public int previousIndex() {
+            return counter == 0 ? -1 : counter - 1;
+        }
+
+        @Override
+        public void remove() {
+            throw  new UnsupportedOperationException();
+
+        }
+
+        @Override
+        public void set(E e) {
+            throw  new UnsupportedOperationException();
+        }
+
+        @Override
+        public void add(E e) {
+            throw  new UnsupportedOperationException();
         }
     }
 }

@@ -118,18 +118,18 @@ public class ArrayListTest {
 
     @Test
     public void shouldDeleteFirstObject() {
-        list.add(new Integer(2));
-        list.add(new Integer(56));
-        list.add(new Integer(5));
+        list.add(2);
+        list.add(56);
+        list.add(5);
         list.remove(new Integer(2));
         assertThat(list.size()).isEqualTo(2);
     }
 
     @Test
     public void shouldDeleteMidlObject() {
-        list.add(new Integer(10));
-        list.add(new Integer(56));
-        list.add(new Integer(5));
+        list.add(10);
+        list.add(56);
+        list.add(5);
         list.remove(new Integer(56));
         assertThat(list.size()).isEqualTo(2);
     }
@@ -137,90 +137,162 @@ public class ArrayListTest {
     @Test
     public void shouldReturnNewArray() {
         List<Integer> list = new ArrayList<>(10);
-        list.add(new Integer(555));
+        list.add(555);
         Object[] objects = list.toArray();
         assertThat(objects.length).isEqualTo(1);
     }
 
     @Test
-    public void shouldReturnIndexfElementInList(){
-        list.add(new Integer(100));
-        list.add(new Integer(560));
-        list.add(new Integer(100));
-        assertThat(list.indexOf(new Integer(100))).isEqualTo(0);
+    public void shouldReturnIndexOfElementInList() {
+        list.add(100);
+        list.add(560);
+        list.add(100);
+        assertThat(list.indexOf(100)).isEqualTo(0);
     }
 
     @Test
-    public void shouldReturnNegativeNumberOneAfterCallMethodIndexOf(){
-        list.add(new Integer(100));
-        list.add(new Integer(560));
-        assertThat(list.indexOf(new Integer(55))).isEqualTo(-1);
+    public void shouldReturnNegativeNumberOneAfterCallMethodIndexOf() {
+        list.add(100);
+        list.add(560);
+        assertThat(list.indexOf(55)).isEqualTo(-1);
     }
 
     @Test
     public void shouldReturnLAstIndexInMethodLastIndex() {
-        list.add(new Integer(100));
-        list.add(new Integer(560));
-        list.add(new Integer(100));
-        assertThat(list.lastIndexOf(new Integer(100))).isEqualTo(2);
+        list.add(100);
+        list.add(560);
+        list.add(100);
+        assertThat(list.lastIndexOf(100)).isEqualTo(2);
     }
 
     @Test
-    public void shouldReturnNegativeNumberOneAfterCallMethodLastIndexOf(){
-        list.add(new Integer(100));
-        list.add(new Integer(560));
-        assertThat(list.lastIndexOf(new Integer(55))).isEqualTo(-1);
+    public void shouldReturnNegativeNumberOneAfterCallMethodLastIndexOf() {
+        list.add(100);
+        list.add(560);
+        assertThat(list.lastIndexOf(55)).isEqualTo(-1);
     }
 
     @Test
-    public void shouldAddElementByIndex(){
-        list.add(new Integer(10));
-        list.add(new Integer(56));
-        list.add(new Integer(80));
-        list.add(new Integer(90));
-        list.add(new Integer(60));
+    public void shouldAddElementByIndex() {
+        list.add(10);
+        list.add(56);
+        list.add(80);
+        list.add(90);
+        list.add(60);
         int size = list.size();
         list.add(3, 200);
         assertThat(list.indexOf(200)).isEqualTo(3);
-        assertThat(list.size()).isEqualTo(size+1);
+        assertThat(list.size()).isEqualTo(size + 1);
     }
 
     @Test
-    public void shouldReturnTrueAfterMethodContainsAll(){
-        list.add(new Integer(10));
-        list.add(new Integer(56));
-        list.add(new Integer(80));
-        list.add(new Integer(90));
-        list.add(new Integer(60));
+    public void shouldReturnTrueAfterMethodContainsAll() {
+        List<Integer> list = Arrays.asList(10, 56, 80, 90, 60);
         Collection<Integer> collections = new ArrayList<>();
-        collections.add(new Integer(56));
-        collections.add(new Integer(60));
+        collections.add(56);
+        collections.add(60);
         assertThat(list.containsAll(collections)).isTrue();
     }
 
     @Test
-    public void shouldReturnFalseAfterMethodContainsAll(){
-        list.add(new Integer(10));
-        list.add(new Integer(56));
-        list.add(new Integer(80));
-        list.add(new Integer(90));
-        list.add(new Integer(60));
+    public void shouldReturnFalseAfterMethodContainsAll() {
+        list.add(10);
+        list.add(56);
+        list.add(80);
+        list.add(90);
+        list.add(60);
         Collection<Integer> collections = new ArrayList<>();
         collections.add(null);
-        collections.add(new Integer(6));
+        collections.add(6);
         assertThat(list.containsAll(collections)).isFalse();
     }
 
     @Test
-    public void shouldReturnTrueAfterMethodAddAll(){
-        list.add(new Integer(10));
-        list.add(new Integer(56));
-        list.add(new Integer(80));
-        list.add(new Integer(90));
-        list.add(new Integer(60));
+    public void shouldReturnTrueAfterMethodAddAll() {
+        list.add(10);
+        list.add(56);
+        list.add(80);
+        list.add(90);
+        list.add(60);
         List<Integer> list2 = new ArrayList<>();
-        list2.add(new Integer(25));
-        list2.add(new Integer(35));
+        list2.add(25);
+        list2.add(35);
         assertThat(list.addAll(list2)).isTrue();
+    }
+
+    @Test
+    public void shouldDoEmptyArrayInMethodClear() {
+        list.add(10);
+        list.add(56);
+        list.add(80);
+        list.clear();
+        assertThat(list.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldAddCollectionToArrayByIndex() {
+        list.add(10);
+        list.add(11);
+        list.add(12);
+        Collection<Integer> collections = new ArrayList<>();
+        collections.add(55);
+        collections.add(56);
+        collections.add(57);
+        list.addAll(2, collections);
+        assertThat(list.size()).isEqualTo(6);
+    }
+
+    @Test
+    public void checkElementOrderInElementList() {
+        list.add(1);
+        list.add(5);
+        list.add(6);
+        list.addAll(1, Arrays.asList(2, 3, 4));
+        assertThat(list).containsExactly(1, 2, 3, 4, 5, 6);
+    }
+
+    @Test
+    public void checkElementOrderWhenAddFromFistIndex() {
+        list.add(1);
+        list.add(5);
+        list.add(6);
+        list.addAll(0, Arrays.asList(2, 3, 4));
+        assertThat(list).containsExactly(2, 3, 4, 1, 5, 6);
+    }
+
+    @Test
+    public void checkElementsOrderWhenAddFromLastIndex() {
+        list.add(1);
+        list.add(5);
+        list.add(6);
+        list.addAll(3, Arrays.asList(2, 3, 4));
+        assertThat(list).containsExactly(1, 5, 6, 2, 3, 4);
+    }
+
+    @Test
+    public void shouldThrowIndexOutOfBoundsExceptionForAddAllByIndex() {
+        list.add(2);
+        assertThatThrownBy(() -> list.addAll(2, Arrays.asList(2, 3)))
+                .isInstanceOf(IndexOutOfBoundsException.class)
+                .hasMessage("index number more then size of ArrayList");
+
+    }
+
+    @Test
+    public void shouldReturnIterator(){
+        list.add(5);
+        list.add(5);
+        assertThat(list.listIterator()).isNotNull();
+    }
+
+    @Test
+    public void shouldReturnIteratorByIndex(){
+        list.add(6);
+        assertThat(list.listIterator(0)).isNotNull();
+    }
+
+    @Test
+    public void shouldThrowIndexOutOfBoundsExceptionForListIteratorByIndex(){
+        assertThatThrownBy(()->list.listIterator(1)).isInstanceOf(IndexOutOfBoundsException.class);
     }
 }
