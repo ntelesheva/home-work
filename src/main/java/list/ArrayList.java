@@ -1,5 +1,6 @@
 package list;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +28,6 @@ public class ArrayList<T> implements List<T> {
     @Override
     public int size() {
         return size;
-        //return elements.length; //was return size
     }
 
     @Override
@@ -56,17 +56,6 @@ public class ArrayList<T> implements List<T> {
         return new IteratorImpl<>();
     }
 
-    @Override
-    public Object[] toArray() {
-        Object[] newArray = new Object[size];
-        System.arraycopy(elements, 0, newArray, 0, size);
-        return newArray;
-    }
-
-    @Override
-    public <T1> T1[] toArray(T1[] a) {
-        throw new UnsupportedOperationException("this method is not implemented yet");
-    }
 
     @Override
     public boolean add(T t) {
@@ -78,6 +67,14 @@ public class ArrayList<T> implements List<T> {
             this.elements = newElements;
         }
         return false;
+    }
+
+    @Override
+    public T get(int index) {
+        if (index >= size) {
+            throw new IndexOutOfBoundsException("index number more then size of ArrayList");
+        }
+        return (T) elements[index];
     }
 
     @Override
@@ -169,15 +166,6 @@ public class ArrayList<T> implements List<T> {
         return true;
     }
 
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException("this method is not implemented yet");
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException("this method is not implemented yet");
-    }
 
     @Override
     public void clear() {
@@ -185,18 +173,6 @@ public class ArrayList<T> implements List<T> {
         this.size = 0;
     }
 
-    @Override
-    public T get(int index) {
-        if (index >= size) {
-            throw new IndexOutOfBoundsException("index number more then size of ArrayList");
-        }
-        return (T) elements[index];
-    }
-
-    @Override
-    public T set(int index, T element) {
-        throw new UnsupportedOperationException("this method is not implemented yet");
-    }
 
     @Override
     public void add(int index, T object) {
@@ -283,16 +259,12 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public ListIterator<T> listIterator(int index) {
-        if(index < 0 || index > size()) {
+        if (index < 0 || index > size()) {
             throw new IndexOutOfBoundsException();
         }
-        return  new ListIteratorImpl<>(index);
+        return new ListIteratorImpl<>(index);
     }
 
-    @Override
-    public List<T> subList(int fromIndex, int toIndex) {
-        throw new UnsupportedOperationException("this method is not implemented yet");
-    }
 
     private class IteratorImpl<E> implements Iterator<E> {
         protected int counter = 0;
@@ -309,6 +281,96 @@ public class ArrayList<T> implements List<T> {
             }
             return (E) elements[counter++];
         }
+    }
+
+    @Override
+    public Object[] toArray() {
+        Object[] newArray = new Object[size];
+        System.arraycopy(elements, 0, newArray, 0, size);
+        return newArray;
+    }
+
+    @Override
+    public <T1> T1[] toArray(T1[] a) {
+        if (a == null) {
+            throw new NullPointerException();
+        }
+        if (a.length < size) {
+            T1[] a2 = (T1[]) Array.newInstance(a.getClass(), size); //T1[] a3 = (T1[]) new Object[size];
+            System.arraycopy(elements, 0, a2, 0, size);
+            return a2;
+        }
+        System.arraycopy(elements, 0, a, 0, size);
+        if (a.length > size) {
+            a[size] = null;
+        }
+        return a;
+    }
+
+
+    @Override
+    public T set(int index, T element) {
+        if (index >= size) {
+            throw new IndexOutOfBoundsException("index > size");
+        }
+        T oldElement = (T) elements[index];
+        elements[index] = element;
+        return oldElement;
+    }
+
+
+    @Override
+    public List<T> subList(int fromIndex, int toIndex) {
+        if (fromIndex < 0) {
+            throw new IndexOutOfBoundsException("fromIndex < 0");
+        }
+        if (toIndex > size) {
+            throw new IndexOutOfBoundsException("toIndex > size");
+        }
+        if (toIndex - fromIndex <= 0) {
+            throw new IndexOutOfBoundsException("toIndex-fromIndex <= 0");
+        }
+        List<T> list = new ArrayList<>();
+        System.arraycopy(elements, fromIndex, list, 0, toIndex);
+        return list;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        if (c == null) {
+            throw new NullPointerException("Collection<?> c == null");
+        }
+        boolean isRemove = false;
+        for (Iterator it = c.iterator(); it.hasNext(); ) {
+            Object object = it.next();
+            if (object == null) {
+                throw new NullPointerException("element Collection<?> c == null");
+            }
+            if (contains(object)) {
+                remove(object);
+                isRemove = true;
+            }
+        }
+        return isRemove;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        if (c == null) {
+            throw new NullPointerException("Collection<?> c == null");
+        }
+        boolean isRetain = false;
+        for (Iterator it = c.iterator(); it.hasNext(); ) {
+            Object object = it.next();
+            if (object == null) {
+                throw new NullPointerException("element Collection<?> c == null");
+            }
+            if (!contains(object)) {
+                remove(object);
+                isRetain = true;
+            }
+        }
+        return isRetain;
     }
 
     private class ListIteratorImpl<E> extends IteratorImpl<E> implements ListIterator<E> {
@@ -345,18 +407,19 @@ public class ArrayList<T> implements List<T> {
 
         @Override
         public void remove() {
-            throw  new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
 
         }
 
         @Override
         public void set(E e) {
-            throw  new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void add(E e) {
-            throw  new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
     }
+
 }
