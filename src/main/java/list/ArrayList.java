@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
+//test git
 public class ArrayList<T> implements List<T> {
 
     private static final int START_CAPACITY = 8;
