@@ -3,6 +3,7 @@ package list;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -295,4 +296,30 @@ public class ArrayListTest {
     public void shouldThrowIndexOutOfBoundsExceptionForListIteratorByIndex(){
         assertThatThrownBy(()->list.listIterator(1)).isInstanceOf(IndexOutOfBoundsException.class);
     }
+
+    @Test
+    public void shouldReturnArray(){
+        Integer [] arrayInt = new Integer[]{10,15,20,25,30};
+        list = Arrays.asList(arrayInt);
+        Integer [] arrInt = new Integer[5];
+        assertThat(list.toArray(arrInt)).hasSize(5).isEqualTo(arrayInt);
+    }
+
+    @Test
+    public void shouldReturnNewBiggerArray(){
+        Integer [] arrayInt = new Integer[]{5, 6, 7};
+        list= Arrays.asList(arrayInt);
+        Integer [] arrInt = new Integer[1];
+        assertThat(list.toArray(arrInt)).hasSize(3).isEqualTo(arrayInt);
+    }
+
+    @Test
+    public void shouldFillArrayNull(){
+        Integer [] arrayInt = new Integer[]{5};
+        Integer [] expectedArray = new Integer[]{5,null};
+        list= Arrays.asList(arrayInt);
+        Integer [] arrInt = new Integer[2];
+        assertThat(list.toArray(arrInt)).hasSize(2).isEqualTo(expectedArray);
+    }
+
 }

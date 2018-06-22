@@ -302,9 +302,6 @@ public class ArrayList<T> implements List<T> {
             return a2;
         }
         System.arraycopy(elements, 0, a, 0, size);
-        if (a.length > size) {
-            a[size] = null;
-        }
         return a;
     }
 

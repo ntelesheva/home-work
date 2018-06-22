@@ -26,7 +26,7 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public boolean contains(Object o) {
-        return false;
+       return (indexOf(o) != -1);
     }
 
     @Override
@@ -71,6 +71,28 @@ public class LinkedList<T> implements List<T> {
         return true;
     }
 
+    @Override
+    public int indexOf(Object o) {
+        Node<T> node = header.getNextNode();
+        if (o == null) {
+            for (int i = 0; i < size - 1; i++) {
+                node = node.getNextNode();
+                Object object = node.getValue();
+                if (object == null) {
+                    return i;
+                }
+            }
+        } else {
+            for (int i = 0; i < size - 1; i++) {
+                Object object = node.getValue();
+                if (o.equals(object)) {
+                    return i;
+                }
+                node = node.getNextNode();
+            }
+        }
+        return -1;
+    }
 
     @Override
     public boolean remove(Object o) {
@@ -149,10 +171,6 @@ public class LinkedList<T> implements List<T> {
         return null;
     }
 
-    @Override
-    public int indexOf(Object o) {
-        return 0;
-    }
 
     @Override
     public int lastIndexOf(Object o) {
