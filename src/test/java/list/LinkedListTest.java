@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,4 +66,37 @@ public class LinkedListTest {
     public void shouldReturnMinusOneForMethodIndexOf() {
         assertThat(list.indexOf(8)).isEqualTo(-1);
     }
+
+    @Test
+    public void shouldReturnArrayIfLengthTheSame(){
+        Integer [] array = new Integer[7];
+        Integer [] expectedArray = new Integer[]{1,2,3,4,5,6};
+        assertThat(list.toArray(array)).isEqualTo(expectedArray);
+    }
+
+    @Test
+    public void shouldReturnArrayIfLengthLess(){
+        Integer [] array = new Integer[1];
+        Integer [] expectedArray = new Integer[]{1,2,3,4,5,6};
+        assertThat(list.toArray(array)).isEqualTo(expectedArray);
+    }
+
+    @Test
+    public void shouldReturnArrayIfLengthIsMore(){
+        Integer [] array = new Integer[8];
+        Integer [] expectedArray = new Integer[]{1,2,3,4,5,6, null, null};
+        assertThat(list.toArray(array)).isEqualTo(expectedArray);
+    }
+    @Test
+    public void shouldReturnTrue(){
+        List<Integer> array  = Arrays.asList(1,5,2);
+        assertThat(list.containsAll(array)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnFalse(){
+        List<Integer> array  = Arrays.asList(111,5,2);
+        assertThat(list.containsAll(array)).isFalse();
+    }
+
 }

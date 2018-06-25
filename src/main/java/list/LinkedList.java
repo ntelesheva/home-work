@@ -26,7 +26,7 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public boolean contains(Object o) {
-       return (indexOf(o) != -1);
+        return (indexOf(o) != -1);
     }
 
     @Override
@@ -51,7 +51,16 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public <T1> T1[] toArray(T1[] a) {
-        return null;
+        if (a.length < size) {
+            a = (T1[]) new Object[size];
+        }
+        Node<T> startNode = header.getNextNode();
+        for (int i = 0; i < size; i++) {
+            a[i] = (T1) startNode.getValue();
+            startNode = startNode.getNextNode();
+        }
+
+        return a;
     }
 
     @Override
@@ -123,7 +132,14 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        throw new UnsupportedOperationException();
+        for (Object object : c) {
+            if (contains(object)) {
+                break;
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
