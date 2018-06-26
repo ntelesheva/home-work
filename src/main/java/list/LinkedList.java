@@ -113,7 +113,7 @@ public class LinkedList<T> implements List<T> {
             size--;
             return true;
         }
-        Node<T> prevNode = null;
+        Node<T> prevNode = firstNode;
         Node<T> currNode = firstNode.getNextNode();
         for (int i = 1; i < size; i++) {
             Object object1 = currNode.getValue();
@@ -133,9 +133,7 @@ public class LinkedList<T> implements List<T> {
     @Override
     public boolean containsAll(Collection<?> c) {
         for (Object object : c) {
-            if (contains(object)) {
-                break;
-            } else {
+            if (!contains(object)) {
                 return false;
             }
         }
@@ -143,8 +141,29 @@ public class LinkedList<T> implements List<T> {
     }
 
     @Override
-    public boolean addAll(Collection<? extends T> c) {
-        return false;
+    public boolean addAll(Collection<? extends T> c) { // TODO : if null or empty
+        if(c == null){
+            return false;
+        }
+        if(c.isEmpty()){
+            return false;
+        }
+
+        Node<T> node = getLastNode();
+        for(T objectCollection : c){
+            node.setNextNode(new Node<>(objectCollection));
+            node=node.getNextNode();
+        }
+        node.setNextNode(null);
+        return true;
+    }
+
+    private Node<T> getLastNode() {
+        Node<T> node = header.getNextNode();
+        for(int i = 0; i < size-1; i++){
+            node = node.getNextNode();
+        }
+        return  node;
     }
 
     @Override
@@ -154,7 +173,14 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        boolean isRemove = false;
+        for (Object objectCollection : c) {
+            if (contains(objectCollection)) {
+                remove(objectCollection);
+                isRemove = true;
+            }
+        }
+        return isRemove;
     }
 
     @Override
@@ -169,6 +195,15 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public T get(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("the index is out of range");
+        }
+        int i = 0;
+        for (Node<T> node = header.getNextNode(); node != null; node = node.getNextNode(),i++) {
+            if (i == index) {
+                return node.getValue();
+            }
+        }
         return null;
     }
 
@@ -184,7 +219,11 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public T remove(int index) {
-        return null;
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("the index is out of range");
+        }
+        T object = get(index);
+        return (remove(object)) ? object : null;
     }
 
 
