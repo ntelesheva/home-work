@@ -1,16 +1,21 @@
 package list;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import static java.util.Arrays.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@RunWith(JUnitParamsRunner.class)
 public class ArrayListTest {
     private List<Integer> list;
 
@@ -20,35 +25,54 @@ public class ArrayListTest {
         list = new ArrayList<>();
     }
 
-    @Test
-    public void shouldReturnZeroForEmptyList() {
-        assertThat(list.size()).isEqualTo(0);
-    }
 
     @Test
-    public void shouldReturnSizeOfNotEmptyList() {
-        list.add(56);
-        assertThat(list.size()).isEqualTo(1);
+    @Parameters(method = "dataForSize")
+    public void shouldReturnSizeForList(List<Integer> listIn, int expectedRez) {
+        assertThat(listIn.size()).isEqualTo(expectedRez);
     }
 
-    @Test
-    public void shouldReturnSizeWithDoubleCapasity() {
-        ArrayList<Integer> list = new ArrayList<>(1);
-        list.add(5);
-        list.add(8);
-        assertThat(list.size()).isEqualTo(2);
+    private Object dataForSize() {
+        return new Object[]{
+                new Object[]{Collections.emptyList(), 0},
+                new Object[]{Collections.singletonList(56), 1},
+                new Object[]{asList(5, 8), 2}
+        };
     }
 
-    @Test
-    public void shouldReturnTrueForEmptyList() {
-        assertThat(list.isEmpty()).isTrue();
-    }
+//    @Test
+//    public void shouldReturnSizeOfNotEmptyList() {
+//        list.add(56);
+//        assertThat(list.size()).isEqualTo(1);
+//    }
+//
+//    @Test
+//    public void shouldReturnSizeWithDoubleCapacity() {
+//        ArrayList<Integer> list = new ArrayList<>(1);
+//        list.add(5);
+//        list.add(8);
+//        assertThat(list.size()).isEqualTo(2);
+//    }
 
     @Test
-    public void shouldReturnFalseForEmptyList() {
-        list.add(56);
-        assertThat(list.isEmpty()).isFalse();
+    @Parameters(method = "dataForIsEmpty")
+    public void shouldReturnTrueOrFalseForMethodIsEmpty(List<Integer> listIn, boolean expected) {
+        assertThat(listIn.isEmpty()).isEqualTo(expected);
     }
+
+    private Object dataForIsEmpty() {
+        return new Object[]{
+                new Object[]{Collections.emptyList(), true},
+                new Object[]{asList(55, 88, 99), false}
+        };
+    }
+
+//    @Test
+//    public void shouldReturnFalseForEmptyList() {
+//        list.add(56);
+//        assertThat(list.isEmpty()).isFalse();
+//    }
+
 
     @Test
     public void shouldReturnTrueIfListContainsObj() {
@@ -158,20 +182,19 @@ public class ArrayListTest {
         assertThat(list.indexOf(55)).isEqualTo(-1);
     }
 
-    @Test
-    public void shouldReturnLAstIndexInMethodLastIndex() {
-        list.add(100);
-        list.add(560);
-        list.add(100);
-        assertThat(list.lastIndexOf(100)).isEqualTo(2);
+    private Object dataForLastIndexOf(){
+        return new Object[]{
+          new Object[]{ Arrays.asList(100, 560, 100), 100, 2},
+          new Object[]{ Arrays.asList(100, 560, 100), 200, -1}
+        };
     }
 
     @Test
-    public void shouldReturnNegativeNumberOneAfterCallMethodLastIndexOf() {
-        list.add(100);
-        list.add(560);
-        assertThat(list.lastIndexOf(55)).isEqualTo(-1);
+    @Parameters(method = "dataForLastIndexOf")
+    public void shouldReturnLastIndexInMethodLastIndexOf(List<Integer> listIn, Integer objToFind, Integer expected) {
+        assertThat(listIn.lastIndexOf(objToFind)).isEqualTo(expected);
     }
+
 
     @Test
     public void shouldAddElementByIndex() {
@@ -186,27 +209,20 @@ public class ArrayListTest {
         assertThat(list.size()).isEqualTo(size + 1);
     }
 
-    @Test
-    public void shouldReturnTrueAfterMethodContainsAll() {
-        List<Integer> list = Arrays.asList(10, 56, 80, 90, 60);
-        Collection<Integer> collections = new ArrayList<>();
-        collections.add(56);
-        collections.add(60);
-        assertThat(list.containsAll(collections)).isTrue();
+    private Object dataForContainsAll(){
+        return new Object[]{
+          new Object[]{ Arrays.asList(56,60), true},
+          new Object[]{ Arrays.asList(556,60), false},
+        };
     }
 
     @Test
-    public void shouldReturnFalseAfterMethodContainsAll() {
-        list.add(10);
-        list.add(56);
-        list.add(80);
-        list.add(90);
-        list.add(60);
-        Collection<Integer> collections = new ArrayList<>();
-        collections.add(null);
-        collections.add(6);
-        assertThat(list.containsAll(collections)).isFalse();
+    @Parameters(method = "dataForContainsAll")
+    public void shouldReturnTrueAfterMethodContainsAll(List<Integer> listIn, boolean isContain) {
+        List<Integer> list = asList(10, 56, 80, 90, 60);
+       assertThat(list.containsAll(listIn)).isEqualTo(isContain);
     }
+
 
     @Test
     public void shouldReturnTrueAfterMethodAddAll() {
@@ -230,95 +246,76 @@ public class ArrayListTest {
         assertThat(list.size()).isEqualTo(0);
     }
 
-    @Test
-    public void shouldAddCollectionToArrayByIndex() {
-        list.add(10);
-        list.add(11);
-        list.add(12);
-        Collection<Integer> collections = new ArrayList<>();
-        collections.add(55);
-        collections.add(56);
-        collections.add(57);
-        list.addAll(2, collections);
-        assertThat(list.size()).isEqualTo(6);
+    private Object dataForAddAll() {
+        return new Object[]{
+                new Object[]{new ArrayList<>(asList(1, 5, 6)), 1, asList(2, 3, 4), new Integer []{1, 2, 3, 4, 5, 6}, 6, null},
+                new Object[]{new ArrayList<>(asList(1, 5, 6)), 0, asList(2, 3, 4), new Integer[]{2, 3, 4, 1, 5, 6}, 6, null},
+                new Object[]{new ArrayList<>(asList(1, 5, 6)), 3, asList(2, 3, 4), new Integer[]{1, 5, 6, 2, 3, 4}, 6, null},
+                new Object[]{new ArrayList<>(asList(2)), 2, asList(2, 3), null, null, new IndexOutOfBoundsException("index number more then size of ArrayList")}
+        };
     }
 
     @Test
-    public void checkElementOrderInElementList() {
-        list.add(1);
-        list.add(5);
-        list.add(6);
-        list.addAll(1, Arrays.asList(2, 3, 4));
-        assertThat(list).containsExactly(1, 2, 3, 4, 5, 6);
+    @Parameters(method = "dataForAddAll")
+    public void testMethodToArrayByIndex(List<Integer> listIn, Integer index, List<Integer> listAdd, Integer[] arrRez, Integer sizeRez, Exception err) {
+        if (err != null) {
+            assertThatThrownBy(() -> listIn.addAll(index, listAdd))
+                    .isInstanceOf(err.getClass())
+                    .hasMessage(err.getMessage());
+        } else {
+            listIn.addAll(index, listAdd);
+            assertThat(listIn).containsExactly(arrRez);
+        }
     }
 
     @Test
-    public void checkElementOrderWhenAddFromFistIndex() {
-        list.add(1);
-        list.add(5);
-        list.add(6);
-        list.addAll(0, Arrays.asList(2, 3, 4));
-        assertThat(list).containsExactly(2, 3, 4, 1, 5, 6);
-    }
-
-    @Test
-    public void checkElementsOrderWhenAddFromLastIndex() {
-        list.add(1);
-        list.add(5);
-        list.add(6);
-        list.addAll(3, Arrays.asList(2, 3, 4));
-        assertThat(list).containsExactly(1, 5, 6, 2, 3, 4);
-    }
-
-    @Test
-    public void shouldThrowIndexOutOfBoundsExceptionForAddAllByIndex() {
-        list.add(2);
-        assertThatThrownBy(() -> list.addAll(2, Arrays.asList(2, 3)))
-                .isInstanceOf(IndexOutOfBoundsException.class)
-                .hasMessage("index number more then size of ArrayList");
-
-    }
-
-    @Test
-    public void shouldReturnIterator(){
+    public void shouldReturnIterator() {
         list.add(5);
         list.add(5);
         assertThat(list.listIterator()).isNotNull();
     }
 
     @Test
-    public void shouldReturnIteratorByIndex(){
+    public void shouldReturnIteratorByIndex() {
         list.add(6);
         assertThat(list.listIterator(0)).isNotNull();
     }
 
     @Test
-    public void shouldThrowIndexOutOfBoundsExceptionForListIteratorByIndex(){
-        assertThatThrownBy(()->list.listIterator(1)).isInstanceOf(IndexOutOfBoundsException.class);
+    public void shouldThrowIndexOutOfBoundsExceptionForListIteratorByIndex() {
+        assertThatThrownBy(() -> list.listIterator(1)).isInstanceOf(IndexOutOfBoundsException.class);
     }
 
-    @Test
-    public void shouldReturnArray(){
-        Integer [] arrayInt = new Integer[]{10,15,20,25,30};
-        list = Arrays.asList(arrayInt);
-        Integer [] arrInt = new Integer[5];
-        assertThat(list.toArray(arrInt)).hasSize(5).isEqualTo(arrayInt);
-    }
+//    private Object dataForToArray(){
+//        return new Object[]{
+//                new Object[]{asList({10, 15, 20, 25, 30),  asList( 3),}
+//
+//        };
+//    }
+
+//    @Test
+//   @Parameters(method = "dataForToArray")
+//    public void shouldReturnArray(List<Integer> listIn, Integer [] arrayIn, ) {
+//      // Integer[] arrayInt = new Integer[]{10, 15, 20, 25, 30};
+//        //list = asList(arrayInt);
+//        Integer[] arrInt = new Integer[5];
+//        assertThat(list.toArray(arrInt)).hasSize(5).isEqualTo(arrayInt);
+//    }
 
     @Test
-    public void shouldReturnNewBiggerArray(){
-        Integer [] arrayInt = new Integer[]{5, 6, 7};
-        list= Arrays.asList(arrayInt);
-        Integer [] arrInt = new Integer[1];
+    public void shouldReturnNewBiggerArray() {
+        Integer[] arrayInt = new Integer[]{5, 6, 7};
+        list = asList(arrayInt);
+        Integer[] arrInt = new Integer[1];
         assertThat(list.toArray(arrInt)).hasSize(3).isEqualTo(arrayInt);
     }
 
     @Test
-    public void shouldFillArrayNull(){
-        Integer [] arrayInt = new Integer[]{5};
-        Integer [] expectedArray = new Integer[]{5,null};
-        list= Arrays.asList(arrayInt);
-        Integer [] arrInt = new Integer[2];
+    public void shouldFillArrayNull() {
+        Integer[] arrayInt = new Integer[]{5};
+        Integer[] expectedArray = new Integer[]{5, null};
+        list = asList(arrayInt);
+        Integer[] arrInt = new Integer[2];
         assertThat(list.toArray(arrInt)).hasSize(2).isEqualTo(expectedArray);
     }
 

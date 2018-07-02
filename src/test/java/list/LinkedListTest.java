@@ -149,4 +149,27 @@ public class LinkedListTest {
         list.addAll(listInt);
         assertThat(list).isNotNull();
     }
+
+
+
+
+    @Test
+    public void shouldTestRetainAll(){
+        List<Integer> listFirst = new LinkedList<>();
+        listFirst.add(111);
+        listFirst.add(222);
+        listFirst.add(333);
+
+        List<Integer> listSecond = new LinkedList<>();
+        listSecond.add(111);
+        listSecond.add(555);
+        listSecond.add(333);
+
+        Integer [] arrStr = new Integer[]{111, 333};
+
+        listFirst.retainAll(listSecond);
+        assertThat(listFirst).containsExactly(arrStr);
+    }
+
+
 }

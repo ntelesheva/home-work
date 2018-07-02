@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.NoSuchElementException;
 
 public class LinkedList<T> implements List<T> {
     private Node<T> header;
@@ -29,10 +30,6 @@ public class LinkedList<T> implements List<T> {
         return (indexOf(o) != -1);
     }
 
-    @Override
-    public Iterator<T> iterator() {
-        return null;
-    }
 
     @Override
     public Object[] toArray() {
@@ -142,17 +139,17 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public boolean addAll(Collection<? extends T> c) { // TODO : if null or empty
-        if(c == null){
+        if (c == null) {
             return false;
         }
-        if(c.isEmpty()){
+        if (c.isEmpty()) {
             return false;
         }
 
         Node<T> node = getLastNode();
-        for(T objectCollection : c){
+        for (T objectCollection : c) {
             node.setNextNode(new Node<>(objectCollection));
-            node=node.getNextNode();
+            node = node.getNextNode();
         }
         node.setNextNode(null);
         return true;
@@ -160,10 +157,10 @@ public class LinkedList<T> implements List<T> {
 
     private Node<T> getLastNode() {
         Node<T> node = header.getNextNode();
-        for(int i = 0; i < size-1; i++){
+        for (int i = 0; i < size - 1; i++) {
             node = node.getNextNode();
         }
-        return  node;
+        return node;
     }
 
     @Override
@@ -185,7 +182,21 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        if (c == null) {
+            throw new NullPointerException("Collection<?> c == null");
+        }
+        boolean isChangeList = false;
+        for (Iterator it = c.iterator(); it.hasNext(); ) {
+            Object object = it.next();
+            if (object == null) {
+                throw new NullPointerException("element Collection<?> c == null");
+            }
+            if (!contains(object)) {
+                remove(object);
+                isChangeList = true;
+            }
+        }
+        return isChangeList;
     }
 
     @Override
@@ -199,7 +210,7 @@ public class LinkedList<T> implements List<T> {
             throw new IndexOutOfBoundsException("the index is out of range");
         }
         int i = 0;
-        for (Node<T> node = header.getNextNode(); node != null; node = node.getNextNode(),i++) {
+        for (Node<T> node = header.getNextNode(); node != null; node = node.getNextNode(), i++) {
             if (i == index) {
                 return node.getValue();
             }
@@ -280,4 +291,30 @@ public class LinkedList<T> implements List<T> {
             this.nextNode = nextNode;
         }
     }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new IteratorImpl<>();
+    }
+
+    private class IteratorImpl<A> implements Iterator<A> {
+        private Node current = header;
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public A next() {
+            if(!hasNext()){
+                throw new NoSuchElementException();
+            }
+            A value = (A) current.getValue();
+            current = current.getNextNode();
+            return value;
+        }
+    }
+
+
 }

@@ -1,11 +1,13 @@
 package list;
 
 import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 //test git
 public class ArrayList<T> implements List<T> {
@@ -24,6 +26,12 @@ public class ArrayList<T> implements List<T> {
     public ArrayList(int capacity) {
         this.capacity = capacity;
         this.elements = new Object[capacity];
+    }
+
+    public ArrayList(Collection<T> collections) {
+        this.capacity = collections.size();
+        this.size = collections.size();
+        this.elements = collections.toArray();
     }
 
     @Override
@@ -52,10 +60,7 @@ public class ArrayList<T> implements List<T> {
         return false;
     }
 
-    @Override
-    public Iterator<T> iterator() {
-        return new IteratorImpl<>();
-    }
+
 
 
     @Override
@@ -125,6 +130,24 @@ public class ArrayList<T> implements List<T> {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ArrayList)) return false;
+        ArrayList<?> arrayList = (ArrayList<?>) o;
+        return capacity == arrayList.capacity &&
+                size == arrayList.size &&
+                Arrays.equals(elements, arrayList.elements);
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result = Objects.hash(capacity, size);
+        result = 31 * result + Arrays.hashCode(elements);
+        return result;
+    }
+
+    @Override
     public boolean addAll(Collection<? extends T> c) {
         int sizeCollection = c.size();
         if (sizeCollection <= 0) {
@@ -137,6 +160,7 @@ public class ArrayList<T> implements List<T> {
         this.elements = newArray;
         size = newArray.length;
         return true;
+
     }
 
     @Override
@@ -251,6 +275,11 @@ public class ArrayList<T> implements List<T> {
             }
         }
         return index;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new IteratorImpl<>();
     }
 
     @Override
