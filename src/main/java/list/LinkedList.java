@@ -7,11 +7,17 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 public class LinkedList<T> implements List<T> {
+    //TODO: constructor
+
     private Node<T> header;
     private int size = 0;
 
+    LinkedList(Collection<? extends T> collection) {
+        this();
+        addAll(collection);
+    }
 
-    public LinkedList() {
+    LinkedList() {
         this.header = new Node<>(null);
     }
 
@@ -63,8 +69,7 @@ public class LinkedList<T> implements List<T> {
     @Override
     public boolean add(T t) {
         if (size == 0) {
-            Node<T> firstNode = new Node<>(t);
-            header.setNextNode(firstNode);
+            addFirstNode(t);
         } else {
             Node<T> node = header.getNextNode();
             for (int i = 0; i < size - 1; i++) {
@@ -75,6 +80,11 @@ public class LinkedList<T> implements List<T> {
         }
         size++;
         return true;
+    }
+
+    public void addFirstNode(T t) {
+        Node<T> firstNode = new Node<>(t);
+        header.setNextNode(firstNode);
     }
 
     @Override
@@ -98,6 +108,58 @@ public class LinkedList<T> implements List<T> {
             }
         }
         return -1;
+    }
+
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        for (Object object : c) {
+            if (!contains(object)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private Node<T> getLastNode() {
+//        if (size == 0) {
+//            return new Node<>(null);
+//        }
+        Node<T> node = header.getNextNode();
+        for (int i = 0; i < size - 1; i++) {
+            node = node.getNextNode();
+        }
+        return node;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends T> c) { // TODO : if null or empty
+        if (c == null) {
+            return false;
+        }
+        if (c.isEmpty()) {
+            return false;
+        }
+        Node<T> node = header.getNextNode();
+
+        if (size != 0) {
+            node = getLastNode();
+        }
+        for (T objectCollection : c) {
+            if (size == 0) {
+                Node<T> firstNode = new Node<>(objectCollection);
+                header.setNextNode(firstNode);
+                node = header.getNextNode();
+            } else {
+                Node<T> newNode = new Node<>(objectCollection);
+                node.setNextNode(newNode);
+                node = node.getNextNode();
+            }
+            size++;
+        }
+        node.setNextNode(null);
+        return true;
     }
 
     @Override
@@ -126,46 +188,29 @@ public class LinkedList<T> implements List<T> {
         return false;
     }
 
-
     @Override
-    public boolean containsAll(Collection<?> c) {
-        for (Object object : c) {
-            if (!contains(object)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends T> c) { // TODO : if null or empty
+    public boolean addAll(int index, Collection<? extends T> c) {
         if (c == null) {
             return false;
         }
         if (c.isEmpty()) {
             return false;
         }
-
-        Node<T> node = getLastNode();
-        for (T objectCollection : c) {
-            node.setNextNode(new Node<>(objectCollection));
-            node = node.getNextNode();
+        if (index > size) {
+            throw new IndexOutOfBoundsException("index number more then size of LinkedList");
         }
-        node.setNextNode(null);
+        Node<T> node1 = header.getNextNode();
+        for (int listIndex = 0; listIndex < index - 1; listIndex++) {
+            node1 = node1.getNextNode();
+        }
+        Node<T> node2 = node1.getNextNode();
+        for (T objFromC : c) {
+            node1.setNextNode(new Node<>(objFromC));
+            node1 = node1.getNextNode();
+        }
+        node1.setNextNode(node2);
+        size += c.size();
         return true;
-    }
-
-    private Node<T> getLastNode() {
-        Node<T> node = header.getNextNode();
-        for (int i = 0; i < size - 1; i++) {
-            node = node.getNextNode();
-        }
-        return node;
-    }
-
-    @Override
-    public boolean addAll(int index, Collection<? extends T> c) {
-        return false;
     }
 
     @Override
@@ -182,19 +227,33 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public boolean retainAll(Collection<?> c) {
+        int indexSize = size;
         if (c == null) {
             throw new NullPointerException("Collection<?> c == null");
         }
+        Node<T> node = header.getNextNode();
+
         boolean isChangeList = false;
-        for (Iterator it = c.iterator(); it.hasNext(); ) {
-            Object object = it.next();
-            if (object == null) {
-                throw new NullPointerException("element Collection<?> c == null");
+        boolean isPresentInCollection = false;
+        for (int i = 0; i < indexSize; i++) {
+            Object objectFromList = node.getValue();
+
+            for (Iterator it = c.iterator(); it.hasNext(); ) {    // 1 2 3 3 3      3 2 1
+                Object objectFromCollection = it.next();
+                if (objectFromList.equals(objectFromCollection)) {
+                    isPresentInCollection = true;
+
+                    break;
+                }else{
+                    isPresentInCollection = false;
+                }
+
             }
-            if (!contains(object)) {
-                remove(object);
+            if(isPresentInCollection  == false){
+                remove(objectFromList);
                 isChangeList = true;
             }
+            node = node.getNextNode();
         }
         return isChangeList;
     }
@@ -302,16 +361,16 @@ public class LinkedList<T> implements List<T> {
 
         @Override
         public boolean hasNext() {
-            return current != null;
+            return current.getNextNode() != null;
         }
 
         @Override
         public A next() {
-            if(!hasNext()){
+            if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            A value = (A) current.getValue();
             current = current.getNextNode();
+            A value = (A) current.getValue();
             return value;
         }
     }

@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -53,7 +55,8 @@ public class LinkedListTest {
         list.add(5);
         list.add(6);
         assertThat(list.remove(new Integer(5))).isTrue();
-        assertThat(list.size()).isEqualTo(5);
+        Integer [] result = new Integer[] {1,2,3,4,6};
+        assertThat(list).contains(result).hasSize(5);
     }
 
 
@@ -155,21 +158,37 @@ public class LinkedListTest {
 
     @Test
     public void shouldTestRetainAll(){
-        List<Integer> listFirst = new LinkedList<>();
-        listFirst.add(111);
-        listFirst.add(222);
-        listFirst.add(333);
-
-        List<Integer> listSecond = new LinkedList<>();
-        listSecond.add(111);
-        listSecond.add(555);
-        listSecond.add(333);
-
+        List<Integer> listFirst = new LinkedList<>(Arrays.asList(111, 222, 333));
+        List<Integer> listSecond = new LinkedList<>(Arrays.asList(111, 555, 333));
         Integer [] arrStr = new Integer[]{111, 333};
-
         listFirst.retainAll(listSecond);
         assertThat(listFirst).containsExactly(arrStr);
     }
 
 
+private Object dataForAddAll(){
+        return new Object[]{
+          new Object[]{asList(111,222,555,666), 2 ,asList(333,444), new Integer[]{111,222,333,444,555,666}}
+        };
+}
+
+    @Test
+   @Parameters(method = "dataForAddAll")
+    public void shouldTestAddAllByIndex(List<Integer> listFirst,int index,  List<Integer>listSecond, Integer [] result){
+//        int index = 2;
+//        List<Integer> listFirst = new LinkedList<>();
+//        listFirst.add(111);
+//        listFirst.add(222);
+//        listFirst.add(555);
+//        listFirst.add(666);
+//
+//        List<Integer> listSecond = new LinkedList<>();
+//        listSecond.add(333);
+//        listSecond.add(444);
+//
+//        Integer [] result = new Integer[]{111,222,333,444,555,666};
+        listFirst.addAll(index, listSecond);
+        assertThat(listFirst).containsExactly(result);
+
+    }
 }
