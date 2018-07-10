@@ -7,8 +7,6 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 public class LinkedList<T> implements List<T> {
-    //TODO: constructor
-
     private Node<T> header;
     private int size = 0;
 
@@ -17,7 +15,7 @@ public class LinkedList<T> implements List<T> {
         addAll(collection);
     }
 
-    LinkedList() {
+    private LinkedList() {
         this.header = new Node<>(null);
     }
 
@@ -82,7 +80,7 @@ public class LinkedList<T> implements List<T> {
         return true;
     }
 
-    public void addFirstNode(T t) {
+    private void addFirstNode(T t) {
         Node<T> firstNode = new Node<>(t);
         header.setNextNode(firstNode);
     }
@@ -123,9 +121,9 @@ public class LinkedList<T> implements List<T> {
 
 
     private Node<T> getLastNode() {
-//        if (size == 0) {
-//            return new Node<>(null);
-//        }
+        if (size == 0) {
+            return new Node<>(null);
+        }
         Node<T> node = header.getNextNode();
         for (int i = 0; i < size - 1; i++) {
             node = node.getNextNode();
@@ -200,17 +198,42 @@ public class LinkedList<T> implements List<T> {
             throw new IndexOutOfBoundsException("index number more then size of LinkedList");
         }
         Node<T> node1 = header.getNextNode();
-        for (int listIndex = 0; listIndex < index - 1; listIndex++) {
-            node1 = node1.getNextNode();
+
+
+        if (index > 0 && index != size - 1) {
+            for (int listIndex = 0; listIndex < index - 1; listIndex++) {
+                node1 = node1.getNextNode();
+            }
+            Node<T> node2 = node1.getNextNode();
+
+            node1 = setNextNewNodesFromCollection(c, node1);
+            node1.setNextNode(node2);
         }
-        Node<T> node2 = node1.getNextNode();
+
+        if (index == 0) {
+            LinkedList<T> tempList = new LinkedList();
+            tempList.addAll(c);
+            Node<T> lastNode = tempList.getLastNode();
+            lastNode.setNextNode(node1);
+            header.setNextNode(tempList.header.getNextNode());
+        }
+
+        if (index == (size - 1)) {
+            Node<T> lastNode = getLastNode();
+            lastNode = setNextNewNodesFromCollection(c, lastNode);
+        }
+
+
+        size += c.size();
+        return true;
+    }
+
+    private Node<T> setNextNewNodesFromCollection(Collection<? extends T> c, Node<T> node1) {
         for (T objFromC : c) {
             node1.setNextNode(new Node<>(objFromC));
             node1 = node1.getNextNode();
         }
-        node1.setNextNode(node2);
-        size += c.size();
-        return true;
+        return node1;
     }
 
     @Override
@@ -238,18 +261,15 @@ public class LinkedList<T> implements List<T> {
         for (int i = 0; i < indexSize; i++) {
             Object objectFromList = node.getValue();
 
-            for (Iterator it = c.iterator(); it.hasNext(); ) {    // 1 2 3 3 3      3 2 1
-                Object objectFromCollection = it.next();
+            for (Object objectFromCollection : c) {
                 if (objectFromList.equals(objectFromCollection)) {
                     isPresentInCollection = true;
-
                     break;
-                }else{
+                } else {
                     isPresentInCollection = false;
                 }
-
             }
-            if(isPresentInCollection  == false){
+            if (!isPresentInCollection) {
                 remove(objectFromList);
                 isChangeList = true;
             }
@@ -299,22 +319,17 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
-    }
-
-    @Override
-    public ListIterator<T> listIterator() {
-        return null;
-    }
-
-    @Override
-    public ListIterator<T> listIterator(int index) {
-        return null;
-    }
-
-    @Override
-    public List<T> subList(int fromIndex, int toIndex) {
-        return null;
+        int lastIndex = -1;
+        int count = 0;
+        Iterator<T> iteratorList = iterator();
+        for (; iteratorList.hasNext(); ){
+            Object object = iteratorList.next();
+            if(object.equals(o)){
+                lastIndex = count;
+            }
+            count++;
+        }
+        return lastIndex;
     }
 
 
@@ -352,6 +367,21 @@ public class LinkedList<T> implements List<T> {
     }
 
     @Override
+    public ListIterator<T> listIterator() {
+        return new ListIteratorImpl<>();
+    }
+
+    @Override
+    public ListIterator<T> listIterator(int index) {
+        return null;
+    }
+
+    @Override
+    public List<T> subList(int fromIndex, int toIndex) {
+        return null;
+    }
+
+    @Override
     public Iterator<T> iterator() {
         return new IteratorImpl<>();
     }
@@ -375,5 +405,44 @@ public class LinkedList<T> implements List<T> {
         }
     }
 
+    private class ListIteratorImpl<E> extends IteratorImpl<E> implements ListIterator<E> {
+        public ListIteratorImpl() {
+        }
 
+
+        @Override
+        public boolean hasPrevious() {
+            return false;
+        }
+
+        @Override
+        public E previous() {
+            return null;
+        }
+
+        @Override
+        public int nextIndex() {
+            return 0;
+        }
+
+        @Override
+        public int previousIndex() {
+            return 0;
+        }
+
+        @Override
+        public void remove() {
+
+        }
+
+        @Override
+        public void set(E e) {
+
+        }
+
+        @Override
+        public void add(E e) {
+
+        }
+    }
 }

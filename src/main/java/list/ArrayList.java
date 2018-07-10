@@ -277,41 +277,8 @@ public class ArrayList<T> implements List<T> {
         return index;
     }
 
-    @Override
-    public Iterator<T> iterator() {
-        return new IteratorImpl<>();
-    }
-
-    @Override
-    public ListIterator<T> listIterator() {
-        return new ListIteratorImpl<>();
-    }
-
-    @Override
-    public ListIterator<T> listIterator(int index) {
-        if (index < 0 || index > size()) {
-            throw new IndexOutOfBoundsException();
-        }
-        return new ListIteratorImpl<>(index);
-    }
 
 
-    private class IteratorImpl<E> implements Iterator<E> {
-        protected int counter = 0;
-
-        @Override
-        public boolean hasNext() {
-            return counter < size;
-        }
-
-        @Override
-        public E next() {
-            if (counter == size) {
-                throw new NoSuchElementException();
-            }
-            return (E) elements[counter++];
-        }
-    }
 
     @Override
     public Object[] toArray() {
@@ -398,6 +365,43 @@ public class ArrayList<T> implements List<T> {
             }
         }
         return isRetain;
+    }
+
+
+    @Override
+    public Iterator<T> iterator() {
+        return new IteratorImpl<>();
+    }
+
+    @Override
+    public ListIterator<T> listIterator() {
+        return new ListIteratorImpl<>();
+    }
+
+    @Override
+    public ListIterator<T> listIterator(int index) {
+        if (index < 0 || index > size()) {
+            throw new IndexOutOfBoundsException();
+        }
+        return new ListIteratorImpl<>(index);
+    }
+
+
+    private class IteratorImpl<E> implements Iterator<E> {
+        protected int counter = 0;
+
+        @Override
+        public boolean hasNext() {
+            return counter < size;
+        }
+
+        @Override
+        public E next() {
+            if (counter == size) {
+                throw new NoSuchElementException();
+            }
+            return (E) elements[counter++];
+        }
     }
 
     private class ListIteratorImpl<E> extends IteratorImpl<E> implements ListIterator<E> {
