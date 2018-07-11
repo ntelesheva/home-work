@@ -180,4 +180,35 @@ public class LinkedListTest {
             System.out.println("objects:" + object);
         }
     }
+
+    @Test
+    public void shouldReturnEmptyList(){
+        list.clear();
+        assertThat(list).isEmpty();
+    }
+
+    @Test
+    @Parameters({
+            "4 | 555  | 5 ",
+            "0 | 111  | 1 "
+    })
+    public void shouldSetElementById(int index, Integer newValue, Integer oldValue){
+        assertThat(list.set(index, newValue)).isEqualTo(oldValue);
+        assertThat(list.get(index)).isEqualTo(newValue);
+    }
+
+    private Object dataForAddByIndex(){
+        return new Object[]{
+          new Object[]{5, 666, new Integer[]{1,2,3,4,5,666,6}},
+          new Object[]{2, 333, new Integer[]{1,2,333,3,4,5,6}},
+          new Object[]{0, 000, new Integer[]{000,1,2,3,4,5,6}}
+        };
+    }
+
+    @Test
+    @Parameters(method = "dataForAddByIndex")
+    public void shouldAddElementByIndex(int index, Integer newData, Integer[] result){
+        list.add(index, newData);
+        assertThat(list).containsExactly(result);
+    }
 }

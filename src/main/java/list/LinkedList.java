@@ -280,6 +280,14 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public void clear() {
+        for (Node<T> x = header; x != null; ) {
+            Node<T> next = x.getNextNode();
+            x.setValue(null);
+            x.setNextNode(null);
+            x = next;
+        }
+        header = null;
+        size = 0;
 
     }
 
@@ -297,15 +305,6 @@ public class LinkedList<T> implements List<T> {
         return null;
     }
 
-    @Override
-    public T set(int index, T element) {
-        return null;
-    }
-
-    @Override
-    public void add(int index, T element) {
-
-    }
 
     @Override
     public T remove(int index) {
@@ -322,9 +321,9 @@ public class LinkedList<T> implements List<T> {
         int lastIndex = -1;
         int count = 0;
         Iterator<T> iteratorList = iterator();
-        for (; iteratorList.hasNext(); ){
+        for (; iteratorList.hasNext(); ) {
             Object object = iteratorList.next();
-            if(object.equals(o)){
+            if (object.equals(o)) {
                 lastIndex = count;
             }
             count++;
@@ -332,6 +331,50 @@ public class LinkedList<T> implements List<T> {
         return lastIndex;
     }
 
+    @Override
+    public T set(int index, T element) {
+        if (index >= size) {
+            throw new IndexOutOfBoundsException("index >= then size of the list");
+        }
+        T value;
+        Node<T> node = header.getNextNode();
+        for (int count = 0; count < index; count++) {
+            node = node.getNextNode();
+        }
+        value = node.getValue();
+        node.setValue(element);
+
+        return value;
+    }
+
+    @Override
+    public void add(int index, T element) {
+        if (index >= size) {
+            throw new IndexOutOfBoundsException("index >= then size of the list");
+        }
+        Node<T> newNode = new Node<>(element);
+
+        if (index == 0) {
+            Node<T> nextNode = header.getNextNode();
+            header.setNextNode(newNode);
+            Node<T> currNode = header.getNextNode();
+            currNode.setNextNode(nextNode);
+            size++;
+
+        } else {
+            Node<T> prevNode = header.getNextNode();
+            Node<T> node = prevNode.getNextNode();
+            for (int count = 0; count < index - 1; count++) {
+                prevNode = prevNode.getNextNode();
+                node = prevNode.getNextNode();
+            }
+
+            prevNode.setNextNode(newNode);
+            prevNode = prevNode.getNextNode();
+            prevNode.setNextNode(node);
+            size++;
+        }
+    }
 
     private class Node<E> {
         private E value;
